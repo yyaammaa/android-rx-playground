@@ -12,9 +12,6 @@ import com.yyaammaa.rxplayground.util.Logr;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -46,19 +43,21 @@ public class RetroActivity extends ActionBarActivity {
   }
 
   private void get1() {
+    GitHubApiClient client = GitHub.getApiClient();
 
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(GitHub.ENDPOINT)
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-        .build();
-
-    GitHubApiClient client = retrofit.create(GitHubApiClient.class);
+    // TODO: 404エラーとかどこでハンドリング？
 
     // https://api.github.com/gists/f36f5dba0c2ae784688c
     Observable<Gist> obs = client.getGistById("f36f5dba0c2ae784688c");
     obs.subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+//        .map(new Func1<Gist, Gist>() {
+//          @Override
+//          public Gist call(Gist gist) {
+//            gist.url = "this is url: " + gist.url;
+//            return gist;
+//          }
+//        })
         .subscribe(new Observer<Gist>() {
           @Override
           public void onCompleted() {
