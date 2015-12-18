@@ -32,7 +32,7 @@ public class MainActivity extends ActionBarActivity {
 
   @OnClick(R.id.act_main_test_button_1)
   void onTest1Click() {
-
+    startActivity(RetroActivity.createIntent(this));
   }
 
   private void test() {
@@ -45,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
     // mergeTest2();
     //toList();
     //  toList2();
-    retry();
+   // retry();
   }
 
   private void retry() {
