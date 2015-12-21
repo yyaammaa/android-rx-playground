@@ -8,7 +8,7 @@ public final class GitHub {
 
   private static final String ENDPOINT = "https://api.github.com/";
 
-  public static GitHubApiClient getApiClient() {
+  public static GitHubApiClient createApiClient() {
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(GitHub.ENDPOINT)
         .addConverterFactory(GsonConverterFactory.create())

@@ -43,7 +43,7 @@ public class RetroActivity extends ActionBarActivity {
   }
 
   private void get1() {
-    GitHubApiClient client = GitHub.getApiClient();
+    GitHubApiClient client = GitHub.createApiClient();
 
     // TODO: 404エラーとかどこでハンドリング？
 
