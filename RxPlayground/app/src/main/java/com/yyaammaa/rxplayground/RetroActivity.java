@@ -39,11 +39,96 @@ public class RetroActivity extends ActionBarActivity {
   @OnClick(R.id.act_retro_test_button_1)
   void onTest1Click() {
     //get1();
-    get2();
+    //get2();
+    get3();
   }
 
   private void test() {
 
+  }
+
+  private <T> Func1<Throwable, ? extends Observable<? extends T>> refreshTokenAndRetry(
+      final Observable<T> toBeResumed) {
+    return new Func1<Throwable, Observable<? extends T>>() {
+      @Override
+      public Observable<? extends T> call(Throwable throwable) {
+        // Here check if the error thrown really is a 401
+//        if (isHttp401Error(throwable)) {
+//          return refreshToken().flatMap(new Func1<AuthToken, Observable<? extends T>>() {
+//            @Override
+//            public Observable<? extends T> call(AuthToken token) {
+//              return toBeResumed;
+//            }
+//          });
+//        }
+
+        // deferが望ましい ("HeaderにTokenを再度セットしてもう1回やる" とかのユースケースなら)
+        // ref: http://stackoverflow.com/questions/26201420/retrofit-with-rxjava-handling-network-exceptions-globally#comment54457784_26201962
+        Logr.e("refreshTokenAndRetry: call: getAuthToken success");
+        return toBeResumed;
+
+        // re-throw this error because it's not recoverable from here
+        // Logr.e("refreshTokenAndRetry: call: getAuthToken failed");
+        // return Observable.error(throwable);
+      }
+    };
+  }
+
+  private void get3() {
+
+    // このやりかただと何故かNetworkOnMainThreadエラーがでてしまう... 謎。↓でも解決できない
+    // http://stackoverflow.com/questions/33266886/networkonmainthread-rxjava-retrofit-lollipop
+//    Observable<Gist> deferred = Observable.defer(new Func0<Observable<Gist>>() {
+//      @Override
+//      public Observable<Gist> call() {
+//        Logr.e("defer: Call");
+//        return new GitHubManager().get404andRetryGetToken();
+//      }
+//    });
+//    deferred
+//        .unsubscribeOn(Schedulers.io())
+//        .subscribe(new Observer<Gist>() {
+//      @Override
+//      public void onCompleted() {
+//        Logr.e("onCompleted");
+//      }
+//
+//      @Override
+//      public void onError(Throwable throwable) {
+//        Logr.e("onError");
+//        throwable.printStackTrace();
+//      }
+//
+//      @Override
+//      public void onNext(Gist gist) {
+//        Logr.e("onNext");
+//      }
+//    });
+
+    GitHubApiClient client = GitHub.createApiClient();
+    Observable<Gist> obs = client.get404();
+    obs.subscribeOn(Schedulers.io())
+        // observeOnの前に置かないと、refreshTokenAndRetry()が
+        // UIスレッドで実行されてしまうので注意な
+        .onErrorResumeNext(refreshTokenAndRetry(obs))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<Gist>() {
+          @Override
+          public void onCompleted() {
+            Logr.e("onCompleted");
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            Logr.e("onError");
+            throwable.printStackTrace();
+          }
+
+          @Override
+          public void onNext(Gist gist) {
+            Logr.e("onNext");
+          }
+        });
   }
 
   private void get2() {

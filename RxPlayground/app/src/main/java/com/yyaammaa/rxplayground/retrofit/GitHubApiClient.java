@@ -16,4 +16,7 @@ public interface GitHubApiClient {
   @GET("gists/{id}")
   Observable<Gist> getGistById(@Path("id") String id);
 
+
+  @GET("fwjioewjfioe")
+  Observable<Gist> get404();
 }
