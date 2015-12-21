@@ -17,4 +17,5 @@ public final class GitHub {
 
     return retrofit.create(GitHubApiClient.class);
   }
+
 }
