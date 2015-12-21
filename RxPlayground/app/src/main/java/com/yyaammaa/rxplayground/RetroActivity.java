@@ -57,6 +57,13 @@ public class RetroActivity extends ActionBarActivity {
             return Observable.from(gists);
           }
         })
+        .map(new Func1<Gist, Gist>() {
+          @Override
+          public Gist call(Gist gist) {
+            gist.url = "wooooo!! " + gist.url;
+            return gist;
+          }
+        })
         .subscribe(new Observer<Gist>() {
           @Override
           public void onCompleted() {
