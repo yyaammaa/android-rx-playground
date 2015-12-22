@@ -47,11 +47,6 @@ public class WasabeatActivity extends ActionBarActivity {
     setUpViews();
     load();
   }
-//
-//  @OnClick(R.id.act_wasabeat_test_button_1)
-//  void onTest1Click() {
-//    get1();
-//  }
 
   private void setUpViews() {
     mAdapter = new SectionListAdapter(this);
