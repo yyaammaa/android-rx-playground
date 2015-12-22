@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,8 @@ public class WasabeatActivity extends ActionBarActivity {
 
   private Map<Track, MediaPlayer> mPlayers;
   private int mCurrentPinnedPosition = -1;
+
+  private Handler mHandler = new Handler();
 
   public static Intent createIntent(Context caller) {
     return new Intent(caller, WasabeatActivity.class);
@@ -96,32 +99,34 @@ public class WasabeatActivity extends ActionBarActivity {
       return;
     }
 
+    // 全部止めてから再生する
+
     for (Track tr : mPlayers.keySet()) {
       MediaPlayer player = mPlayers.get(tr);
-      if (tr.equals(track)) {
-        player.start();
-        Logr.e("start: " + tr.title);
-      } else {
-        if (player.isPlaying()) {
-          Logr.e("stop: " + tr.title);
-          player.stop();
-          player.prepareAsync();
-        }
+      if (player.isPlaying()) {
+        Logr.e("stop: " + tr.title);
+        player.stop();
+        player.prepareAsync();
       }
     }
 
-//    new Thread(new Runnable() {
-//      @Override
-//      public void run() {
-//        // 切り替え時にレイテンシがあるので予め全部用意したほうがいいかなあ
-//        if (mMediaPlayer != null) {
-//          mMediaPlayer.release();
-//          mMediaPlayer = null;
+    MediaPlayer pl = mPlayers.get(track);
+    pl.start();
+    Logr.e("start: " + track.title);
+
+//    for (Track tr : mPlayers.keySet()) {
+//      MediaPlayer player = mPlayers.get(tr);
+//      if (tr.equals(track)) {
+//        player.start();
+//        Logr.e("start: " + tr.title);
+//      } else {
+//        if (player.isPlaying()) {
+//          Logr.e("stop: " + tr.title);
+//          player.stop();
+//          player.prepareAsync();
 //        }
-//        mMediaPlayer = MediaPlayer.create(WasabeatActivity.this, Uri.parse(track.urls.sample));
-//        mMediaPlayer.start();
 //      }
-//    }).start();
+//    }
   }
 
   private void preparePlayers(final Article article) {
@@ -135,7 +140,12 @@ public class WasabeatActivity extends ActionBarActivity {
               MediaPlayer.create(getApplicationContext(), Uri.parse(sec.track.urls.sample)));
         }
         Logr.e("preparePlayers: finished");
-        Toast.makeText(getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
+        mHandler.post(new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
+          }
+        });
       }
     }).start();
   }
