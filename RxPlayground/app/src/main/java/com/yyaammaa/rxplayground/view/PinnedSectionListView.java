@@ -26,6 +26,10 @@ import android.widget.SectionIndexer;
  */
 public class PinnedSectionListView extends ListView {
 
+  public interface EventListener {
+    public void onPinned(int position);
+  }
+
   //-- inner classes
 
   /**
@@ -48,6 +52,8 @@ public class PinnedSectionListView extends ListView {
   }
 
   //-- class fields
+
+  private EventListener mEventListener;
 
   // fields used for handling touch events
   private final Rect mTouchRect = new Rect();
@@ -166,6 +172,10 @@ public class PinnedSectionListView extends ListView {
 
   //-- public API methods
 
+  public void setEventListener(EventListener listener) {
+    mEventListener = listener;
+  }
+
   public void setShadowVisible(boolean visible) {
     initShadow(visible);
     if (mPinnedSection != null) {
@@ -195,7 +205,9 @@ public class PinnedSectionListView extends ListView {
    * Create shadow wrapper with a pinned view for a view at given position
    */
   void createPinnedShadow(int position) {
-
+    if (mEventListener != null) {
+      mEventListener.onPinned(position);
+    }
     // try to recycle shadow
     PinnedSection pinnedShadow = mRecycleSection;
     mRecycleSection = null;

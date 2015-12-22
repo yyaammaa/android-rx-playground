@@ -32,10 +32,12 @@ import rx.schedulers.Schedulers;
 
 public class WasabeatActivity extends ActionBarActivity {
 
-  @Bind(R.id.act_wasabeat_list_view) PinnedSectionListView mListView;
+  @Bind(R.id.act_wasabeat_list_view) PinnedSectionListView mPinnedSectionListView;
 
   private ArticleHeaderViewHolder mArticleHeaderViewHolder;
   private SectionListAdapter mAdapter;
+
+  private int mCurrentPinnedPosition = -1;
 
   public static Intent createIntent(Context caller) {
     return new Intent(caller, WasabeatActivity.class);
@@ -56,13 +58,32 @@ public class WasabeatActivity extends ActionBarActivity {
     mAdapter = new SectionListAdapter(this);
 
     mArticleHeaderViewHolder = new ArticleHeaderViewHolder(this);
-    mListView.addHeaderView(mArticleHeaderViewHolder.getRootView(), null, false);
+    mPinnedSectionListView.addHeaderView(mArticleHeaderViewHolder.getRootView(), null, false);
 
     // 十分に長いfooterが無いと最後の曲の再生ができないね
     View footer = LayoutInflater.from(this).inflate(R.layout.item_article_footer, null);
-    mListView.addFooterView(footer);
+    mPinnedSectionListView.addFooterView(footer);
 
-    mListView.setAdapter(mAdapter);
+    mPinnedSectionListView.setAdapter(mAdapter);
+
+    mPinnedSectionListView.setShadowVisible(true);
+    mPinnedSectionListView.setEventListener(new PinnedSectionListView.EventListener() {
+      @Override
+      public void onPinned(int position) {
+        if (position < 1) {
+          return;
+        }
+        if (mCurrentPinnedPosition != position - 1) {
+          mCurrentPinnedPosition = position - 1;
+          //Logr.e("" + mCurrentPinnedPosition);
+          onTrackSelected((Track) mAdapter.getItem(mCurrentPinnedPosition));
+        }
+      }
+    });
+  }
+
+  private void onTrackSelected(Track track) {
+    Logr.e("onTrackSelected: " + track.title);
   }
 
   private void setArticle(final Article article) {
