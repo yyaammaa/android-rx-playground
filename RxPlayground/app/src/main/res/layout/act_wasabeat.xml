@@ -11,7 +11,7 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:text="retrofit text"
+        android:text="wasabeat"
         android:layout_height="wrap_content" />
 
     <Button
