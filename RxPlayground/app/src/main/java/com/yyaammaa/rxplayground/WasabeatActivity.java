@@ -151,22 +151,18 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void setArticle(final Article article) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        mArticleHeaderViewHolder.bind(article);
-        mAdapter.addAll(article.sections);
+    mArticleHeaderViewHolder.bind(article);
+    mAdapter.addAll(article.sections);
 
-        preparePlayers(article);
-      }
-    });
+    preparePlayers(article);
   }
 
   private void load() {
     ArticleResponse response = getResponse();
     Observable<Article> obs = createArticle(response);
-    obs.observeOn(Schedulers.io())
-        .subscribeOn(AndroidSchedulers.mainThread())
+    obs
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Observer<Article>() {
           @Override
           public void onCompleted() {
@@ -184,7 +180,7 @@ public class WasabeatActivity extends ActionBarActivity {
             for (Section sec : article.sections) {
               Logr.e("track title = " + sec.track.title + ", title = " + sec.title);
             }
-            // TODO: ここはUI Threadではないぽい。。何故?
+
             setArticle(article);
           }
         });
@@ -205,8 +201,8 @@ public class WasabeatActivity extends ActionBarActivity {
             return article;
           }
         })
-        .observeOn(Schedulers.io())
-        .subscribeOn(AndroidSchedulers.mainThread());
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread());
 
   }
 
@@ -225,16 +221,15 @@ public class WasabeatActivity extends ActionBarActivity {
             return section;
           }
         })
-        .observeOn(Schedulers.io())
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .toList();
+        .subscribeOn(Schedulers.io())
+        .toList()
+        .observeOn(AndroidSchedulers.mainThread());
   }
 
   private Observable<Track> loadTracks(ArticleResponse response) {
     Observable<ArticleResponse> aa = Observable.just(response);
     return aa
-        .observeOn(Schedulers.io())
-        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribeOn(Schedulers.io())
         .flatMap(new Func1<ArticleResponse, Observable<Integer>>() {
           @Override
           public Observable<Integer> call(ArticleResponse articleResponse) {
@@ -250,12 +245,14 @@ public class WasabeatActivity extends ActionBarActivity {
           public Observable<Track> call(Integer integer) {
             return getTrack(integer);
           }
-        });
+        })
+        .observeOn(AndroidSchedulers.mainThread());
   }
 
   private Observable<Track> getTrack(int id) {
     Observable<Track> trackObservable = Wasabeat.createApiClient().getTrack(id);
-    trackObservable.subscribeOn(Schedulers.io())
+    trackObservable
+        .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread());
     return trackObservable;
   }
