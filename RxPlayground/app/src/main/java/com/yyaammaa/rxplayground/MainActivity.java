@@ -35,6 +35,11 @@ public class MainActivity extends ActionBarActivity {
     startActivity(RetroActivity.createIntent(this));
   }
 
+  @OnClick(R.id.act_main_test_button_2)
+  void onTest2Click() {
+    startActivity(WasabeatActivity.createIntent(this));
+  }
+
   private void test() {
     //hello("john", "mike");
     // numbers(0, 1, 2, 3, 4, 5);
@@ -45,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
     // mergeTest2();
     //toList();
     //  toList2();
-   // retry();
+    // retry();
   }
 
   private void retry() {
