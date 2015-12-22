@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.yyaammaa.rxplayground.adapter.SectionListAdapter;
 import com.yyaammaa.rxplayground.texture.Article;
@@ -51,10 +53,15 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void setUpViews() {
+    mAdapter = new SectionListAdapter(this);
+
     mArticleHeaderViewHolder = new ArticleHeaderViewHolder(this);
     mListView.addHeaderView(mArticleHeaderViewHolder.getRootView(), null, false);
 
-    mAdapter = new SectionListAdapter(this);
+    // 十分に長いfooterが無いと最後の曲の再生ができないね
+    View footer = LayoutInflater.from(this).inflate(R.layout.item_article_footer, null);
+    mListView.addFooterView(footer);
+
     mListView.setAdapter(mAdapter);
   }
 
