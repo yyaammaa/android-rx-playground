@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.yyaammaa.rxplayground.texture.Section;
+import com.yyaammaa.rxplayground.view.PinnedSectionListView;
 import com.yyaammaa.rxplayground.viewholder.SectionTextItemViewHolder;
 import com.yyaammaa.rxplayground.viewholder.TrackItemViewHolder;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
@@ -13,7 +14,8 @@ import com.yyaammaa.rxplayground.wasabeat.model.Track;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectionListAdapter extends BaseAdapter {
+public class SectionListAdapter extends BaseAdapter
+    implements PinnedSectionListView.PinnedSectionListAdapter {
 
   public enum Type {
     SONG, TEXT
@@ -28,6 +30,11 @@ public class SectionListAdapter extends BaseAdapter {
 
     mContext = context;
     mItems = new ArrayList<>();
+  }
+
+  @Override
+  public boolean isItemViewTypePinned(int viewType) {
+    return viewType == Type.SONG.ordinal();
   }
 
   @Override

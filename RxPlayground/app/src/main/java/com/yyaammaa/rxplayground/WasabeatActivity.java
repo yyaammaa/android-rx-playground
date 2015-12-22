@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.widget.ListView;
 
 import com.yyaammaa.rxplayground.adapter.SectionListAdapter;
 import com.yyaammaa.rxplayground.texture.Article;
@@ -12,6 +11,8 @@ import com.yyaammaa.rxplayground.texture.ArticleResponse;
 import com.yyaammaa.rxplayground.texture.Section;
 import com.yyaammaa.rxplayground.texture.SectionResponse;
 import com.yyaammaa.rxplayground.util.Logr;
+import com.yyaammaa.rxplayground.view.PinnedSectionListView;
+import com.yyaammaa.rxplayground.viewholder.ArticleHeaderViewHolder;
 import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
 
@@ -29,8 +30,9 @@ import rx.schedulers.Schedulers;
 
 public class WasabeatActivity extends ActionBarActivity {
 
-  @Bind(R.id.act_wasabeat_list_view) ListView mListView;
+  @Bind(R.id.act_wasabeat_list_view) PinnedSectionListView mListView;
 
+  private ArticleHeaderViewHolder mArticleHeaderViewHolder;
   private SectionListAdapter mAdapter;
 
   public static Intent createIntent(Context caller) {
@@ -49,6 +51,9 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void setUpViews() {
+    mArticleHeaderViewHolder = new ArticleHeaderViewHolder(this);
+    mListView.addHeaderView(mArticleHeaderViewHolder.getRootView(), null, false);
+
     mAdapter = new SectionListAdapter(this);
     mListView.setAdapter(mAdapter);
   }
@@ -57,6 +62,7 @@ public class WasabeatActivity extends ActionBarActivity {
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        mArticleHeaderViewHolder.bind(article);
         mAdapter.addAll(article.sections);
       }
     });
