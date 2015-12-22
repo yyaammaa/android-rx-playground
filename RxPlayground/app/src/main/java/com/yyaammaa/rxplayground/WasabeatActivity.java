@@ -54,25 +54,27 @@ public class WasabeatActivity extends ActionBarActivity {
   private void load() {
     ArticleResponse response = getResponse();
     Observable<Article> obs = createArticle(response);
-    obs.subscribe(new Observer<Article>() {
-      @Override
-      public void onCompleted() {
-        Logr.e("onCompleted");
-      }
+    obs.observeOn(Schedulers.io())
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<Article>() {
+          @Override
+          public void onCompleted() {
+            Logr.e("onCompleted");
+          }
 
-      @Override
-      public void onError(Throwable throwable) {
-        Logr.e("onError");
-      }
+          @Override
+          public void onError(Throwable throwable) {
+            Logr.e("onError");
+          }
 
-      @Override
-      public void onNext(Article article) {
-        Logr.e("onNext: title = " + article.title + ", section size = " + article.sections.size());
-        for (Section sec : article.sections) {
-          Logr.e("track title = " + sec.track.title + ", title = " + sec.title);
-        }
-      }
-    });
+          @Override
+          public void onNext(Article article) {
+            Logr.e("onNext: title = " + article.title + ", section size = " + article.sections.size());
+            for (Section sec : article.sections) {
+              Logr.e("track title = " + sec.track.title + ", title = " + sec.title);
+            }
+          }
+        });
   }
 
   // ArticleResponseからarticleをつくる
@@ -89,7 +91,9 @@ public class WasabeatActivity extends ActionBarActivity {
             article.sections = sections;
             return article;
           }
-        });
+        })
+        .observeOn(Schedulers.io())
+        .subscribeOn(AndroidSchedulers.mainThread());
 
   }
 
@@ -108,6 +112,8 @@ public class WasabeatActivity extends ActionBarActivity {
             return section;
           }
         })
+        .observeOn(Schedulers.io())
+        .subscribeOn(AndroidSchedulers.mainThread())
         .toList();
   }
 
@@ -132,106 +138,6 @@ public class WasabeatActivity extends ActionBarActivity {
             return getTrack(integer);
           }
         });
-
-    //        .toList()
-//        .subscribe(new Observer<List<Track>>() {
-//          @Override
-//          public void onCompleted() {
-//            Logr.e("onCompleted");
-//          }
-//
-//          @Override
-//          public void onError(Throwable throwable) {
-//            Logr.e("onError");
-//            throwable.printStackTrace();
-//          }
-//
-//          @Override
-//          public void onNext(List<Track> tracks) {
-//            Logr.e("onNext: tracks.size = " + tracks.size());
-//            for (Track track : tracks) {
-//              Logr.e("onNext: id = " + track.id + ", title = " + nullToEmpty(track.title));
-//            }
-//          }
-//        })
-    //   ;
-
-    // ok (Articleはまだ)
-//    ArticleResponse response = getResponse();
-//    Observable<ArticleResponse> aa = Observable.just(response);
-//    aa.observeOn(Schedulers.io())
-//        .subscribeOn(AndroidSchedulers.mainThread())
-//        .flatMap(new Func1<ArticleResponse, Observable<Integer>>() {
-//          @Override
-//          public Observable<Integer> call(ArticleResponse articleResponse) {
-//            List<Integer> trackIds = new ArrayList<>();
-//            for (SectionResponse sectionResponse : articleResponse.sections) {
-//              trackIds.add(sectionResponse.trackId);
-//            }
-//            return Observable.from(trackIds);
-//          }
-//        })
-//        .flatMap(new Func1<Integer, Observable<Track>>() {
-//          @Override
-//          public Observable<Track> call(Integer integer) {
-//            return getTrack(integer);
-//          }
-//        })
-//        .toList()
-//        .subscribe(new Observer<List<Track>>() {
-//          @Override
-//          public void onCompleted() {
-//            Logr.e("onCompleted");
-//          }
-//
-//          @Override
-//          public void onError(Throwable throwable) {
-//            Logr.e("onError");
-//            throwable.printStackTrace();
-//          }
-//
-//          @Override
-//          public void onNext(List<Track> tracks) {
-//            Logr.e("onNext: tracks.size = " + tracks.size());
-//            for (Track track : tracks) {
-//              Logr.e("onNext: id = " + track.id + ", title = " + nullToEmpty(track.title));
-//            }
-//          }
-//        })
-//    ;
-
-    // これはOK
-//    ArticleResponse response = getResponse();
-//    Observable<ArticleResponse> aa = Observable.just(response);
-//    aa.observeOn(Schedulers.io())
-//        .subscribeOn(AndroidSchedulers.mainThread())
-//        .map(new Func1<ArticleResponse, Article>() {
-//          @Override
-//          public Article call(ArticleResponse articleResponse) {
-//            Article article = new Article();
-//            article.title = articleResponse.title;
-//            article.description = articleResponse.description;
-//            return article;
-//          }
-//        })
-//        .subscribe(new Observer<Article>() {
-//          @Override
-//          public void onCompleted() {
-//            Logr.e("onCompleted");
-//          }
-//
-//          @Override
-//          public void onError(Throwable throwable) {
-//            Logr.e("onError");
-//            throwable.printStackTrace();
-//          }
-//
-//          @Override
-//          public void onNext(Article article) {
-//            Logr.e("onNext: title = " + article.title + ", desc = " + article.description);
-//          }
-//        });
-
   }
 
   private Observable<Track> getTrack(int id) {
@@ -241,6 +147,7 @@ public class WasabeatActivity extends ActionBarActivity {
     return trackObservable;
   }
 
+  // サーバからのレスポンス (擬似)
   private ArticleResponse getResponse() {
     ArticleResponse articleResponse = new ArticleResponse();
     articleResponse.title = "おすすめの10曲";
