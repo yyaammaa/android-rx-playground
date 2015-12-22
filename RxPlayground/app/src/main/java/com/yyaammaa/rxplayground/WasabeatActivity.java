@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.widget.ListView;
 
+import com.yyaammaa.rxplayground.adapter.SectionListAdapter;
 import com.yyaammaa.rxplayground.texture.Article;
 import com.yyaammaa.rxplayground.texture.ArticleResponse;
 import com.yyaammaa.rxplayground.texture.Section;
@@ -16,8 +18,8 @@ import com.yyaammaa.rxplayground.wasabeat.model.Track;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -26,6 +28,10 @@ import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class WasabeatActivity extends ActionBarActivity {
+
+  @Bind(R.id.act_wasabeat_list_view) ListView mListView;
+
+  private SectionListAdapter mAdapter;
 
   public static Intent createIntent(Context caller) {
     return new Intent(caller, WasabeatActivity.class);
@@ -41,14 +47,24 @@ public class WasabeatActivity extends ActionBarActivity {
     setUpViews();
     load();
   }
-
-  @OnClick(R.id.act_wasabeat_test_button_1)
-  void onTest1Click() {
-    get1();
-  }
+//
+//  @OnClick(R.id.act_wasabeat_test_button_1)
+//  void onTest1Click() {
+//    get1();
+//  }
 
   private void setUpViews() {
+    mAdapter = new SectionListAdapter(this);
+    mListView.setAdapter(mAdapter);
+  }
 
+  private void setArticle(final Article article) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        mAdapter.addAll(article.sections);
+      }
+    });
   }
 
   private void load() {
@@ -73,6 +89,8 @@ public class WasabeatActivity extends ActionBarActivity {
             for (Section sec : article.sections) {
               Logr.e("track title = " + sec.track.title + ", title = " + sec.title);
             }
+            // TODO: ここはUI Threadではないぽい。。何故?
+            setArticle(article);
           }
         });
   }
