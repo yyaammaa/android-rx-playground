@@ -23,4 +23,9 @@ public class Track {
 
   public Track() {
   }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof Track && this.id == ((Track) o).id;
+  }
 }

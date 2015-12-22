@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import com.yyaammaa.rxplayground.adapter.SectionListAdapter;
 import com.yyaammaa.rxplayground.texture.Article;
@@ -21,7 +22,9 @@ import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,7 +42,7 @@ public class WasabeatActivity extends ActionBarActivity {
   private ArticleHeaderViewHolder mArticleHeaderViewHolder;
   private SectionListAdapter mAdapter;
 
-  private MediaPlayer mMediaPlayer;
+  private Map<Track, MediaPlayer> mPlayers;
   private int mCurrentPinnedPosition = -1;
 
   public static Intent createIntent(Context caller) {
@@ -88,16 +91,51 @@ public class WasabeatActivity extends ActionBarActivity {
   private void onTrackSelected(final Track track) {
     Logr.e("onTrackSelected: " + track.title);
 
+    if (mPlayers == null) {
+      Logr.e("onTrackSelected: player is null");
+      return;
+    }
+
+    for (Track tr : mPlayers.keySet()) {
+      MediaPlayer player = mPlayers.get(tr);
+      if (tr.equals(track)) {
+        player.start();
+        Logr.e("start: " + tr.title);
+      } else {
+        if (player.isPlaying()) {
+          Logr.e("stop: " + tr.title);
+          player.stop();
+          player.prepareAsync();
+        }
+      }
+    }
+
+//    new Thread(new Runnable() {
+//      @Override
+//      public void run() {
+//        // 切り替え時にレイテンシがあるので予め全部用意したほうがいいかなあ
+//        if (mMediaPlayer != null) {
+//          mMediaPlayer.release();
+//          mMediaPlayer = null;
+//        }
+//        mMediaPlayer = MediaPlayer.create(WasabeatActivity.this, Uri.parse(track.urls.sample));
+//        mMediaPlayer.start();
+//      }
+//    }).start();
+  }
+
+  private void preparePlayers(final Article article) {
     new Thread(new Runnable() {
       @Override
       public void run() {
-        // 切り替え時にレイテンシがあるので予め全部用意したほうがいいかなあ
-        if (mMediaPlayer != null) {
-          mMediaPlayer.release();
-          mMediaPlayer = null;
+        mPlayers = new HashMap<>();
+        for (Section sec : article.sections) {
+          mPlayers.put(
+              sec.track,
+              MediaPlayer.create(getApplicationContext(), Uri.parse(sec.track.urls.sample)));
         }
-        mMediaPlayer = MediaPlayer.create(WasabeatActivity.this, Uri.parse(track.urls.sample));
-        mMediaPlayer.start();
+        Logr.e("preparePlayers: finished");
+        Toast.makeText(getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
       }
     }).start();
   }
@@ -108,6 +146,8 @@ public class WasabeatActivity extends ActionBarActivity {
       public void run() {
         mArticleHeaderViewHolder.bind(article);
         mAdapter.addAll(article.sections);
+
+        preparePlayers(article);
       }
     });
   }
