@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Toast;
 
 import com.yyaammaa.rxplayground.adapter.SectionListAdapter;
@@ -45,7 +46,6 @@ public class WasabeatActivity extends ActionBarActivity {
 
   private Map<Track, MediaPlayer> mPlayers;
   private int mCurrentPinnedPosition = -1;
-
   private Handler mHandler = new Handler();
 
   public static Intent createIntent(Context caller) {
@@ -82,11 +82,24 @@ public class WasabeatActivity extends ActionBarActivity {
         if (position < 1) {
           return;
         }
+
         if (mCurrentPinnedPosition != position - 1) {
           mCurrentPinnedPosition = position - 1;
           //Logr.e("" + mCurrentPinnedPosition);
           onTrackSelected((Track) mAdapter.getItem(mCurrentPinnedPosition));
         }
+      }
+    });
+    mPinnedSectionListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+      @Override
+      public void onScrollStateChanged(AbsListView view, int scrollState) {
+      }
+
+      @Override
+      public void onScroll(AbsListView view,
+                           int firstVisibleItem,
+                           int visibleItemCount,
+                           int totalItemCount) {
       }
     });
   }
