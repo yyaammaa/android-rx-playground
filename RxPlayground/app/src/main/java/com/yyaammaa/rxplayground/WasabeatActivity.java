@@ -91,6 +91,7 @@ public class WasabeatActivity extends ActionBarActivity {
     new Thread(new Runnable() {
       @Override
       public void run() {
+        // 切り替え時にレイテンシがあるので予め全部用意したほうがいいかなあ
         if (mMediaPlayer != null) {
           mMediaPlayer.release();
           mMediaPlayer = null;
