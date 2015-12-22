@@ -2,6 +2,8 @@ package com.yyaammaa.rxplayground;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -37,6 +39,7 @@ public class WasabeatActivity extends ActionBarActivity {
   private ArticleHeaderViewHolder mArticleHeaderViewHolder;
   private SectionListAdapter mAdapter;
 
+  private MediaPlayer mMediaPlayer;
   private int mCurrentPinnedPosition = -1;
 
   public static Intent createIntent(Context caller) {
@@ -82,8 +85,20 @@ public class WasabeatActivity extends ActionBarActivity {
     });
   }
 
-  private void onTrackSelected(Track track) {
+  private void onTrackSelected(final Track track) {
     Logr.e("onTrackSelected: " + track.title);
+
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        if (mMediaPlayer != null) {
+          mMediaPlayer.release();
+          mMediaPlayer = null;
+        }
+        mMediaPlayer = MediaPlayer.create(WasabeatActivity.this, Uri.parse(track.urls.sample));
+        mMediaPlayer.start();
+      }
+    }).start();
   }
 
   private void setArticle(final Article article) {
