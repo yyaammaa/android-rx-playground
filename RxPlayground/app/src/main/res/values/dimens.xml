@@ -4,6 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
 
-    <dimen name="item_track_image_size">72dp</dimen>
+    <dimen name="item_track_image_size">48dp</dimen>
 
 </resources>

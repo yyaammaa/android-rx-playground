@@ -24,10 +24,9 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -36,16 +35,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#555555"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 tools:text="Derrick May" />
 
             <TextView
                 android:id="@+id/item_track_track_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="0dp"
                 android:textColor="#333333"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 tools:text="Strings of Life" />
 
         </LinearLayout>
