@@ -7,7 +7,8 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="@dimen/item_track_image_size" />
+        android:layout_height="@dimen/item_track_image_size"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,8 +40,8 @@
         <TextView
             android:id="@+id/item_section_text_title"
             android:layout_width="match_parent"
-            android:layout_marginTop="32dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:textColor="#333333"
             android:textSize="18sp"
             tools:text="Title" />
@@ -50,8 +51,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textColor="#333333"
             android:lineSpacingExtra="8sp"
+            android:textColor="#333333"
             android:textSize="14sp"
             tools:text="Strings of Life is good!\njdeiowfjei ifowe " />
 
@@ -59,6 +60,7 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="@dimen/item_track_image_size" />
+        android:layout_height="@dimen/item_track_image_size"
+        android:visibility="gone" />
 
 </LinearLayout>
