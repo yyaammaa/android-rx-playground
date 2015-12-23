@@ -122,19 +122,6 @@ public class WasabeatActivity extends ActionBarActivity {
     pl.start();
     Logr.e("start: " + track.title);
 
-//    for (Track tr : mPlayers.keySet()) {
-//      MediaPlayer player = mPlayers.get(tr);
-//      if (tr.equals(track)) {
-//        player.start();
-//        Logr.e("start: " + tr.title);
-//      } else {
-//        if (player.isPlaying()) {
-//          Logr.e("stop: " + tr.title);
-//          player.stop();
-//          player.prepareAsync();
-//        }
-//      }
-//    }
   }
 
   private void preparePlayers(final Article article) {

@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/item_track_image"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="@dimen/item_track_image_size"
+            android:layout_height="@dimen/item_track_image_size"
             tools:background="#cccccc" />
 
         <LinearLayout

@@ -16,6 +16,8 @@ public class SectionTextItemViewHolder {
   private final View mRootView;
   private final Context mContext;
 
+  @Bind(R.id.item_section_text_track_title) TextView mTrackTitleView;
+  @Bind(R.id.item_section_text_track_text) TextView mTrackTextView;
   @Bind(R.id.item_section_text_title) TextView mTitleView;
   @Bind(R.id.item_section_text_text) TextView mTextView;
 
@@ -35,6 +37,8 @@ public class SectionTextItemViewHolder {
   public void bind(Section section) {
     mSection = section;
 
+    mTrackTitleView.setText(section.track.title);
+    mTrackTextView.setText(section.track.artist.name);
     mTitleView.setText(mSection.title);
     mTextView.setText(mSection.text);
   }

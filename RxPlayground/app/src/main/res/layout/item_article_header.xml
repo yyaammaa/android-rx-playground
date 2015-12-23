@@ -29,7 +29,8 @@
             android:layout_marginTop="16dp"
             android:textColor="#333333"
             android:textSize="14sp"
-            tools:text="Strings of Life is good!" />
+            android:lineSpacingExtra="8sp"
+            tools:text="Strings of Life is good!\nStrings of Life is good!" />
 
     </LinearLayout>
 

@@ -5,18 +5,41 @@
     android:background="#ffffff"
     android:orientation="vertical">
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_track_image_size" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="32dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="64dp"
-        android:orientation="vertical">
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        tools:background="#cccccc">
+
+        <TextView
+            android:id="@+id/item_section_text_track_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/item_section_text_track_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#555555"
+            android:textSize="12sp"
+            tools:text="Subtitle" />
 
         <TextView
             android:id="@+id/item_section_text_title"
             android:layout_width="match_parent"
+            android:layout_marginTop="32dp"
             android:layout_height="wrap_content"
             android:textColor="#333333"
             android:textSize="18sp"
@@ -28,9 +51,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:textColor="#333333"
+            android:lineSpacingExtra="8sp"
             android:textSize="14sp"
-            tools:text="Strings of Life is good!" />
+            tools:text="Strings of Life is good!\njdeiowfjei ifowe " />
 
     </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_track_image_size" />
 
 </LinearLayout>
