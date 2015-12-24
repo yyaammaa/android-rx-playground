@@ -40,10 +40,38 @@ public class RetroActivity extends ActionBarActivity {
   void onTest1Click() {
     //get1();
     //get2();
-    get3();
+    //get3();
+    get4();
   }
 
   private void test() {
+  }
+
+  private void get4() {
+    final Context context = getApplicationContext();
+    Observable<Gist> obs = GitHub.createApiClient().getGistById("aa");
+    obs
+        .subscribeOn(Schedulers.io())
+            //  .onErrorResumeNext(GitHub.getRefreshTokenAndResume(getApplicationContext(), obs))
+        .onErrorResumeNext(GitHub.getRefreshTokenAndResume2(getApplicationContext(), obs))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<Gist>() {
+          @Override
+          public void onCompleted() {
+            Logr.e("onCompleted");
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            Logr.e("onError");
+            throwable.printStackTrace();
+          }
+
+          @Override
+          public void onNext(Gist gist) {
+            Logr.e("onNext: " + gist.id);
+          }
+        });
 
   }
 
