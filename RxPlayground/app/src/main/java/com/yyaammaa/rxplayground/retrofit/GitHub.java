@@ -73,4 +73,44 @@ public final class GitHub {
     };
   }
 
+  // Qiita投稿用
+  public static <T> Func1<Throwable, Observable<? extends T>> getAccessToken(
+      final Observable<T> toBeResumed) {
+    return new Func1<Throwable, Observable<? extends T>>() {
+      @Override
+      public Observable<? extends T> call(Throwable throwable) {
+
+        // 401じゃない場合はそのままエラーにする
+        if (!isStatuscode401(throwable)) {
+          return Observable.error(throwable);
+        }
+
+        // 401の場合はアクセストークン再取得
+        //       Gist accessToken = GitHub.createApiClient().getGistById("id").toBlocking().single();
+        String accessToken = getAccessToken();
+        if (accessToken == null) {
+          // アクセストークンの再取得に失敗した場合はエラーを投げる
+          return Observable.error(new AuthorizationFailedException());
+        } else {
+          // アクセストークンの再取得に成功した場合は
+          // アクセストークンをローカルに保存して、もとの処理をもう1回行う
+          saveAccessToken("aa");
+          return toBeResumed;
+        }
+      }
+    };
+  }
+
+  // Qiita用
+  private static boolean isStatuscode401(Throwable throwable) {
+    return true;
+  }
+
+  private static String getAccessToken() {
+    return null;
+  }
+
+  private static void saveAccessToken(String token) {
+  }
+
 }

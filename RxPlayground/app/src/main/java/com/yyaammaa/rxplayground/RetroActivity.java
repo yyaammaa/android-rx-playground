@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+import com.yyaammaa.rxplayground.retrofit.AuthorizationFailedException;
 import com.yyaammaa.rxplayground.retrofit.Gist;
 import com.yyaammaa.rxplayground.retrofit.GitHub;
 import com.yyaammaa.rxplayground.retrofit.GitHubApiClient;
@@ -43,10 +44,59 @@ public class RetroActivity extends ActionBarActivity {
     //get1();
     //get2();
     //get3();
-    get4();
+    //get4();
+    forQiitaPost();
   }
 
   private void test() {
+  }
+
+  // Qiita投稿ネタ用
+  private void forQiitaPost() {
+
+    Observable<Gist> deferredObs = Observable.defer(
+        new Func0<Observable<Gist>>() {
+          @Override
+          public Observable<Gist> call() {
+
+            // ローカルに保存してあるアクセストークンを読みだす
+            // String acccessToken = HogeManager.getAccessToken();
+
+            // アクセストークン付きのリクエスト
+            return GitHub.createApiClient().getGistById("id");
+            //return GitHub.createApiClient().getGistById("id", acccessToken);
+          }
+        });
+
+    deferredObs
+        .subscribeOn(Schedulers.io())
+        .onErrorResumeNext(GitHub.getAccessToken(deferredObs))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<Gist>() {
+          @Override
+          public void onCompleted() {
+            Logr.e("onCompleted");
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            if (throwable instanceof AuthorizationFailedException) {
+              Logr.e("onError: AuthorizationFailedException");
+
+              // アクセストークンが取得できなかった場合 (ログイン画面などに飛ばす)
+              //doSomething();
+              return;
+            }
+
+            Logr.e("onError");
+            throwable.printStackTrace();
+          }
+
+          @Override
+          public void onNext(Gist gist) {
+            Logr.e("onNext: " + gist.id);
+          }
+        });
   }
 
   private void get4() {
