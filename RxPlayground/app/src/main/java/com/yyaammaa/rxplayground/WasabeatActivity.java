@@ -23,6 +23,7 @@ import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -31,6 +32,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -142,24 +145,81 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void preparePlayers(final Article article) {
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        mPlayers = new HashMap<>();
-        for (Section sec : article.sections) {
-          mPlayers.put(
-              sec.track,
-              MediaPlayer.create(getApplicationContext(), Uri.parse(sec.track.urls.sample)));
-        }
-        Logr.e("preparePlayers: finished");
-        mHandler.post(new Runnable() {
+    mCompositeSubscription.add(
+        prepare(article)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Observer<Boolean>() {
+              @Override
+              public void onCompleted() {
+                Logr.e("preparePlayers: onCompleted");
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                Logr.e("preparePlayers: onError");
+                throwable.printStackTrace();
+              }
+
+              @Override
+              public void onNext(Boolean aBoolean) {
+                Logr.e("preparePlayers: onNext: " + aBoolean);
+                Toast.makeText(getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
+              }
+            })
+    );
+  }
+
+  /**
+   * prepare成功でtrue
+   */
+  private Observable<Boolean> prepare(Article article) {
+    return Observable.just(article)
+        .doOnSubscribe(new Action0() {
           @Override
-          public void run() {
-            Toast.makeText(getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
+          public void call() {
+            Logr.e("prepare: doOnSubscribe");
+            mPlayers = new HashMap<>();
+          }
+        })
+        .flatMap(new Func1<Article, Observable<Section>>() {
+          @Override
+          public Observable<Section> call(Article article) {
+            return Observable.from(article.sections);
+          }
+        })
+        .flatMap(new Func1<Section, Observable<Track>>() {
+          @Override
+          public Observable<Track> call(Section section) {
+            return Observable.just(section.track);
+          }
+        })
+        .filter(new Func1<Track, Boolean>() {
+          @Override
+          public Boolean call(Track track) {
+            if (track.urls == null) {
+              Logr.e("track.urls is null, title = " + track.title);
+              return false;
+            }
+            if (track.urls.sample == null) {
+              Logr.e("track.urls.sample is null, title = " + track.title);
+              return false;
+            }
+
+            mPlayers.put(
+                track,
+                MediaPlayer.create(getApplicationContext(), Uri.parse(track.urls.sample))
+            );
+            return true;
+          }
+        })
+        .toList()
+        .map(new Func1<List<Track>, Boolean>() {
+          @Override
+          public Boolean call(List<Track> tracks) {
+            return mPlayers.size() == tracks.size();
           }
         });
-      }
-    }).start();
   }
 
   private void setArticle(final Article article) {
@@ -167,7 +227,7 @@ public class WasabeatActivity extends ActionBarActivity {
     mArticleHeaderViewHolder.bind(article);
     mAdapter.addAll(article.sections);
 
-    //preparePlayers(article);
+    preparePlayers(article);
   }
 
   private void load() {
