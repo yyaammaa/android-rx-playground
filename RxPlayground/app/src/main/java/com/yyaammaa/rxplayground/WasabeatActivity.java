@@ -22,6 +22,7 @@ import com.yyaammaa.rxplayground.viewholder.ArticleHeaderViewHolder;
 import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +157,7 @@ public class WasabeatActivity extends ActionBarActivity {
               @Override
               public void onError(Throwable throwable) {
                 Logr.e("preparePlayers: onError");
+                Toast.makeText(getApplicationContext(), "failed to prepare mediaplayers", Toast.LENGTH_SHORT).show();
                 throwable.printStackTrace();
               }
 
@@ -182,16 +184,14 @@ public class WasabeatActivity extends ActionBarActivity {
             mPlayers = new HashMap<>();
           }
         })
-        .flatMap(new Func1<Article, Observable<Section>>() {
+        .flatMap(new Func1<Article, Observable<Track>>() {
           @Override
-          public Observable<Section> call(Article article) {
-            return Observable.from(article.sections);
-          }
-        })
-        .flatMap(new Func1<Section, Observable<Track>>() {
-          @Override
-          public Observable<Track> call(Section section) {
-            return Observable.just(section.track);
+          public Observable<Track> call(Article article) {
+            List<Track> tracks = new ArrayList<>();
+            for (Section sec : article.sections) {
+              tracks.add(sec.track);
+            }
+            return Observable.from(tracks);
           }
         })
         .filter(new Func1<Track, Boolean>() {
@@ -223,7 +223,6 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void setArticle(final Article article) {
-
     mArticleHeaderViewHolder.bind(article);
     mAdapter.addAll(article.sections);
 
