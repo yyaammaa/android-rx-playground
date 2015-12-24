@@ -29,12 +29,16 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class WasabeatActivity extends ActionBarActivity {
 
   @Bind(R.id.act_wasabeat_list_view) PinnedSectionListView mPinnedSectionListView;
+
+  private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
   private ArticleHeaderViewHolder mArticleHeaderViewHolder;
   private SectionListAdapter mAdapter;
@@ -56,6 +60,19 @@ public class WasabeatActivity extends ActionBarActivity {
 
     setUpViews();
     load();
+  }
+
+  @Override
+  protected void onStop() {
+    Logr.e("onStop");
+    super.onStop();
+  }
+
+  @Override
+  protected void onDestroy() {
+    Logr.e("onDestroy");
+    mCompositeSubscription.unsubscribe();
+    super.onDestroy();
   }
 
   private void setUpViews() {
@@ -146,6 +163,7 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void setArticle(final Article article) {
+
     mArticleHeaderViewHolder.bind(article);
     mAdapter.addAll(article.sections);
 
@@ -153,7 +171,7 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void load() {
-    TextureClient.loadArticle()
+    Subscription subs = TextureClient.loadArticle()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Observer<Article>() {
@@ -177,7 +195,7 @@ public class WasabeatActivity extends ActionBarActivity {
             setArticle(article);
           }
         });
-
+    mCompositeSubscription.add(subs);
   }
 
   private void get1() {
