@@ -157,14 +157,23 @@ public class WasabeatActivity extends ActionBarActivity {
               @Override
               public void onError(Throwable throwable) {
                 Logr.e("preparePlayers: onError");
-                Toast.makeText(getApplicationContext(), "failed to prepare mediaplayers", Toast.LENGTH_SHORT).show();
+                Toast.makeText(
+                    getApplicationContext(),
+                    "failed to prepare mediaplayers", Toast.LENGTH_SHORT).show();
                 throwable.printStackTrace();
               }
 
               @Override
               public void onNext(Boolean aBoolean) {
                 Logr.e("preparePlayers: onNext: " + aBoolean);
-                Toast.makeText(getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
+                if (aBoolean) {
+                  Toast.makeText(
+                      getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
+                } else {
+                  Toast.makeText(
+                      getApplicationContext(),
+                      "ready to play (but something is wrong)", Toast.LENGTH_SHORT).show();
+                }
               }
             })
     );
