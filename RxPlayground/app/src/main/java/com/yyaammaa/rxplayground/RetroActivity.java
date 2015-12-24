@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import com.yyaammaa.rxplayground.retrofit.Gist;
 import com.yyaammaa.rxplayground.retrofit.GitHub;
 import com.yyaammaa.rxplayground.retrofit.GitHubApiClient;
+import com.yyaammaa.rxplayground.util.ContextUtils;
 import com.yyaammaa.rxplayground.util.Logr;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import butterknife.OnClick;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -48,12 +50,24 @@ public class RetroActivity extends ActionBarActivity {
   }
 
   private void get4() {
-    final Context context = getApplicationContext();
-    Observable<Gist> obs = GitHub.createApiClient().getGistById("aa");
-    obs
+    Observable<Gist> deferredObs = Observable.defer(
+        new Func0<Observable<Gist>>() {
+          @Override
+          public Observable<Gist> call() {
+
+            // ここはsubscribeOnで指定したスレッドで実行される
+            // deferだと、リトライ後の2回目の実行時にここがまた呼ばれるので、
+            // tokenの再セットなどがここでできる
+            Logr.e("defer: call: isUiThread = "
+                + ContextUtils.isUiThread(getApplicationContext()));
+
+            return GitHub.createApiClient().getGistById("aa");
+          }
+        });
+    deferredObs
         .subscribeOn(Schedulers.io())
-            //  .onErrorResumeNext(GitHub.getRefreshTokenAndResume(getApplicationContext(), obs))
-        .onErrorResumeNext(GitHub.getRefreshTokenAndResume2(getApplicationContext(), obs))
+            //  .onErrorResumeNext(GitHub.getRefreshTokenAndResume(getApplicationContext(), deferredObs))
+        .onErrorResumeNext(GitHub.getRefreshTokenAndResume2(getApplicationContext(), deferredObs))
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Observer<Gist>() {
           @Override
@@ -72,7 +86,6 @@ public class RetroActivity extends ActionBarActivity {
             Logr.e("onNext: " + gist.id);
           }
         });
-
   }
 
   private <T> Func1<Throwable, ? extends Observable<? extends T>> refreshTokenAndRetry(
