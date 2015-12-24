@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import com.yyaammaa.rxplayground.adapter.SectionListAdapter;
 import com.yyaammaa.rxplayground.texture.Article;
 import com.yyaammaa.rxplayground.texture.Section;
 import com.yyaammaa.rxplayground.texture.TextureClient;
+import com.yyaammaa.rxplayground.util.ContextUtils;
 import com.yyaammaa.rxplayground.util.Logr;
 import com.yyaammaa.rxplayground.view.PinnedSectionListView;
 import com.yyaammaa.rxplayground.viewholder.ArticleHeaderViewHolder;
@@ -41,14 +41,12 @@ public class WasabeatActivity extends ActionBarActivity {
 
   @Bind(R.id.act_wasabeat_list_view) PinnedSectionListView mPinnedSectionListView;
 
-  private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
-
   private ArticleHeaderViewHolder mArticleHeaderViewHolder;
   private SectionListAdapter mAdapter;
 
+  private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
   private Map<Track, MediaPlayer> mPlayers;
   private int mCurrentPinnedPosition = -1;
-  private Handler mHandler = new Handler();
 
   public static Intent createIntent(Context caller) {
     return new Intent(caller, WasabeatActivity.class);
@@ -178,7 +176,9 @@ public class WasabeatActivity extends ActionBarActivity {
         .doOnSubscribe(new Action0() {
           @Override
           public void call() {
-            Logr.e("prepare: doOnSubscribe");
+            // ここもsubscribeOnで指定したスレッドで実行される
+            Logr.e("prepare: doOnSubscribe: isUiThread = "
+                + ContextUtils.isUiThread(getApplicationContext()));
             mPlayers = new HashMap<>();
           }
         })
