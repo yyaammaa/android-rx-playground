@@ -176,6 +176,25 @@ public class WasabeatActivity extends ActionBarActivity {
           }
         });
 
+//    Subscription subscription = prepare(article)
+//        .subscribeOn(Schedulers.io())
+//        .observeOn(AndroidSchedulers.mainThread())
+//        .materialize()
+//        .subscribe(new Action1<Notification<Boolean>>() {
+//          @Override
+//          public void call(Notification<Boolean> booleanNotif) {
+//            Logr.e(booleanNotif.toString());
+//            switch (booleanNotif.getKind()) {
+//              case OnError:
+//                break;
+//              case OnCompleted:
+//                break;
+//              case OnNext:
+//                break;
+//            }
+//          }
+//        });
+
     mCompositeSubscription.add(subscription);
   }
 
