@@ -9,17 +9,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.yyaammaa.rxplayground.adapter.PinnedSectionListAdapter;
+import com.yyaammaa.rxplayground.adapter.SectionListAdapter;
 import com.yyaammaa.rxplayground.texture.Article;
 import com.yyaammaa.rxplayground.texture.Section;
 import com.yyaammaa.rxplayground.texture.TextureClient;
 import com.yyaammaa.rxplayground.util.ContextUtils;
 import com.yyaammaa.rxplayground.util.Logr;
-import com.yyaammaa.rxplayground.view.PinnedSectionListView;
 import com.yyaammaa.rxplayground.viewholder.ArticleHeaderViewHolder;
-import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
 
 import java.util.ArrayList;
@@ -38,26 +37,26 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class WasabeatActivity extends ActionBarActivity {
+public class Wasabeat2Activity extends ActionBarActivity {
 
-  @Bind(R.id.act_wasabeat_list_view) PinnedSectionListView mPinnedSectionListView;
+  @Bind(R.id.act_wasabeat2_list_view) ListView mListView;
 
   private ArticleHeaderViewHolder mArticleHeaderViewHolder;
-  private PinnedSectionListAdapter mAdapter;
+  private SectionListAdapter mAdapter;
 
   private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
   private Map<Track, MediaPlayer> mPlayers;
   private int mCurrentPinnedPosition = -1;
 
   public static Intent createIntent(Context caller) {
-    return new Intent(caller, WasabeatActivity.class);
+    return new Intent(caller, Wasabeat2Activity.class);
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.act_wasabeat);
+    setContentView(R.layout.act_wasabeat2);
     ButterKnife.bind(this);
 
     setUpViews();
@@ -78,33 +77,16 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void setUpViews() {
-    mAdapter = new PinnedSectionListAdapter(this);
+    mAdapter = new SectionListAdapter(this);
 
     mArticleHeaderViewHolder = new ArticleHeaderViewHolder(this);
-    mPinnedSectionListView.addHeaderView(mArticleHeaderViewHolder.getRootView(), null, false);
+    mListView.addHeaderView(mArticleHeaderViewHolder.getRootView(), null, false);
 
     // 十分に長いfooterが無いと最後の曲の再生ができないね
     View footer = LayoutInflater.from(this).inflate(R.layout.item_article_footer, null);
-    mPinnedSectionListView.addFooterView(footer);
-
-    mPinnedSectionListView.setAdapter(mAdapter);
-
-    mPinnedSectionListView.setShadowVisible(true);
-    mPinnedSectionListView.setEventListener(new PinnedSectionListView.EventListener() {
-      @Override
-      public void onPinned(int position) {
-        if (position < 1) {
-          return;
-        }
-
-        if (mCurrentPinnedPosition != position - 1) {
-          mCurrentPinnedPosition = position - 1;
-          //Logr.e("" + mCurrentPinnedPosition);
-          onTrackSelected((Track) mAdapter.getItem(mCurrentPinnedPosition));
-        }
-      }
-    });
-    mPinnedSectionListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+    mListView.addFooterView(footer);
+    mListView.setAdapter(mAdapter);
+    mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
       @Override
       public void onScrollStateChanged(AbsListView view, int scrollState) {
       }
@@ -264,31 +246,6 @@ public class WasabeatActivity extends ActionBarActivity {
           }
         });
     mCompositeSubscription.add(subs);
-  }
-
-  private void get1() {
-    Observable<Track> obs = Wasabeat.createApiClient().getTrack(84166);
-    obs
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Observer<Track>() {
-          @Override
-          public void onCompleted() {
-            Logr.e("onCompleted");
-          }
-
-          @Override
-          public void onError(Throwable throwable) {
-            Logr.e("onError");
-            throwable.printStackTrace();
-          }
-
-          @Override
-          public void onNext(Track track) {
-            Logr.e("onNext: " + track.title + ", by " + track.artist.name);
-          }
-        });
-
   }
 
 }

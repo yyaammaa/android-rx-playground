@@ -40,6 +40,11 @@ public class MainActivity extends ActionBarActivity {
     startActivity(WasabeatActivity.createIntent(this));
   }
 
+  @OnClick(R.id.act_main_test_button_3)
+  void onTest3Click() {
+    startActivity(Wasabeat2Activity.createIntent(this));
+  }
+
   private void test() {
     //hello("john", "mike");
     // numbers(0, 1, 2, 3, 4, 5);
