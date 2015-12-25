@@ -144,39 +144,39 @@ public class WasabeatActivity extends ActionBarActivity {
   }
 
   private void preparePlayers(final Article article) {
-    mCompositeSubscription.add(
-        prepare(article)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Observer<Boolean>() {
-              @Override
-              public void onCompleted() {
-                Logr.e("preparePlayers: onCompleted");
-              }
+    Subscription subscription = prepare(article)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<Boolean>() {
+          @Override
+          public void onCompleted() {
+            Logr.e("preparePlayers: onCompleted");
+          }
 
-              @Override
-              public void onError(Throwable throwable) {
-                Logr.e("preparePlayers: onError");
-                Toast.makeText(
-                    getApplicationContext(),
-                    "failed to prepare mediaplayers", Toast.LENGTH_SHORT).show();
-                throwable.printStackTrace();
-              }
+          @Override
+          public void onError(Throwable throwable) {
+            Logr.e("preparePlayers: onError");
+            Toast.makeText(
+                getApplicationContext(),
+                "failed to prepare mediaplayers", Toast.LENGTH_SHORT).show();
+            throwable.printStackTrace();
+          }
 
-              @Override
-              public void onNext(Boolean aBoolean) {
-                Logr.e("preparePlayers: onNext: " + aBoolean);
-                if (aBoolean) {
-                  Toast.makeText(
-                      getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
-                } else {
-                  Toast.makeText(
-                      getApplicationContext(),
-                      "ready to play (but something is wrong)", Toast.LENGTH_SHORT).show();
-                }
-              }
-            })
-    );
+          @Override
+          public void onNext(Boolean aBoolean) {
+            Logr.e("preparePlayers: onNext: " + aBoolean);
+            if (aBoolean) {
+              Toast.makeText(
+                  getApplicationContext(), "ready to play", Toast.LENGTH_SHORT).show();
+            } else {
+              Toast.makeText(
+                  getApplicationContext(),
+                  "ready to play (but something is wrong)", Toast.LENGTH_SHORT).show();
+            }
+          }
+        });
+
+    mCompositeSubscription.add(subscription);
   }
 
   /**
