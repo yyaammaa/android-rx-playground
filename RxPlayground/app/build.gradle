@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
     defaultConfig {
@@ -12,12 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -25,9 +20,9 @@ android {
     }
 }
 
-retrolambda {
-    jdk System.getenv("JAVA8_HOME")
-}
+//retrolambda {
+//    jdk System.getenv("JAVA8_HOME")
+//}
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'

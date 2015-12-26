@@ -44,11 +44,6 @@ public class MainActivity extends ActionBarActivity {
     startActivity(RetroActivity.createIntent(self));
   }
 
-//  @OnClick(R.id.act_main_test_button_1)
-//  void onTest1Click() {
-//    startActivity(RetroActivity.createIntent(this));
-//  }
-
   @OnClick(R.id.act_main_test_button_2)
   void onTest2Click() {
     startActivity(WasabeatActivity.createIntent(this));

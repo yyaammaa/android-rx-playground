@@ -33,14 +33,14 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class WasabeatActivity extends ActionBarActivity {
 
   @Bind(R.id.act_wasabeat_list_view) PinnedSectionListView mPinnedSectionListView;
+
+  private WasabeatActivity self = this;
 
   private ArticleHeaderViewHolder mArticleHeaderViewHolder;
   private PinnedSectionListAdapter mAdapter;
@@ -90,18 +90,15 @@ public class WasabeatActivity extends ActionBarActivity {
     mPinnedSectionListView.setAdapter(mAdapter);
 
     mPinnedSectionListView.setShadowVisible(true);
-    mPinnedSectionListView.setEventListener(new PinnedSectionListView.EventListener() {
-      @Override
-      public void onPinned(int position) {
-        if (position < 1) {
-          return;
-        }
+    mPinnedSectionListView.setEventListener(position -> {
+      if (position < 1) {
+        return;
+      }
 
-        if (mCurrentPinnedPosition != position - 1) {
-          mCurrentPinnedPosition = position - 1;
-          //Logr.e("" + mCurrentPinnedPosition);
-          onTrackSelected((Track) mAdapter.getItem(mCurrentPinnedPosition));
-        }
+      if (mCurrentPinnedPosition != position - 1) {
+        mCurrentPinnedPosition = position - 1;
+        //Logr.e("" + mCurrentPinnedPosition);
+        onTrackSelected((Track) mAdapter.getItem(mCurrentPinnedPosition));
       }
     });
     mPinnedSectionListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -176,25 +173,6 @@ public class WasabeatActivity extends ActionBarActivity {
           }
         });
 
-//    Subscription subscription = prepare(article)
-//        .subscribeOn(Schedulers.io())
-//        .observeOn(AndroidSchedulers.mainThread())
-//        .materialize()
-//        .subscribe(new Action1<Notification<Boolean>>() {
-//          @Override
-//          public void call(Notification<Boolean> booleanNotif) {
-//            Logr.e(booleanNotif.toString());
-//            switch (booleanNotif.getKind()) {
-//              case OnError:
-//                break;
-//              case OnCompleted:
-//                break;
-//              case OnNext:
-//                break;
-//            }
-//          }
-//        });
-
     mCompositeSubscription.add(subscription);
   }
 
@@ -203,51 +181,37 @@ public class WasabeatActivity extends ActionBarActivity {
    */
   private Observable<Boolean> prepare(Article article) {
     return Observable.just(article)
-        .doOnSubscribe(new Action0() {
-          @Override
-          public void call() {
-            // ここもsubscribeOnで指定したスレッドで実行される
-            Logr.e("prepare: doOnSubscribe: isUiThread = "
-                + ContextUtils.isUiThread(getApplicationContext()));
-            mPlayers = new HashMap<>();
-          }
+        .doOnSubscribe(() -> {
+          // ここもsubscribeOnで指定したスレッドで実行される
+          Logr.e("prepare: doOnSubscribe: isUiThread = "
+              + ContextUtils.isUiThread(getApplicationContext()));
+          mPlayers = new HashMap<>();
         })
-        .flatMap(new Func1<Article, Observable<Track>>() {
-          @Override
-          public Observable<Track> call(Article article) {
-            List<Track> tracks = new ArrayList<>();
-            for (Section sec : article.sections) {
-              tracks.add(sec.track);
-            }
-            return Observable.from(tracks);
+        .flatMap(article1 -> {
+          List<Track> tracks = new ArrayList<>();
+          for (Section sec : article1.sections) {
+            tracks.add(sec.track);
           }
+          return Observable.from(tracks);
         })
-        .filter(new Func1<Track, Boolean>() {
-          @Override
-          public Boolean call(Track track) {
-            if (track.urls == null) {
-              Logr.e("track.urls is null, title = " + track.title);
-              return false;
-            }
-            if (track.urls.sample == null) {
-              Logr.e("track.urls.sample is null, title = " + track.title);
-              return false;
-            }
+        .filter(track -> {
+          if (track.urls == null) {
+            Logr.e("track.urls is null, title = " + track.title);
+            return false;
+          }
+          if (track.urls.sample == null) {
+            Logr.e("track.urls.sample is null, title = " + track.title);
+            return false;
+          }
 
-            mPlayers.put(
-                track,
-                MediaPlayer.create(getApplicationContext(), Uri.parse(track.urls.sample))
-            );
-            return true;
-          }
+          mPlayers.put(
+              track,
+              MediaPlayer.create(getApplicationContext(), Uri.parse(track.urls.sample))
+          );
+          return true;
         })
         .toList()
-        .map(new Func1<List<Track>, Boolean>() {
-          @Override
-          public Boolean call(List<Track> tracks) {
-            return mPlayers.size() == tracks.size();
-          }
-        });
+        .map(tracks -> mPlayers.size() == tracks.size());
   }
 
   private void setArticle(final Article article) {
@@ -261,27 +225,19 @@ public class WasabeatActivity extends ActionBarActivity {
     Subscription subs = TextureClient.loadArticle()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Observer<Article>() {
-          @Override
-          public void onCompleted() {
-            Logr.e("onCompleted");
-          }
+        .subscribe(
+            article -> {
+              Logr.e("onNext: title = " + article.title
+                  + ", section size = " + article.sections.size());
+              for (Section sec : article.sections) {
+                Logr.e("track title = " + sec.track.title + ", title = " + sec.title);
+              }
+              setArticle(article);
+            },
+            throwable -> Logr.e("onError"),
+            () -> Logr.e("onCompleted")
+        );
 
-          @Override
-          public void onError(Throwable throwable) {
-            Logr.e("onError");
-          }
-
-          @Override
-          public void onNext(Article article) {
-            Logr.e("onNext: title = " + article.title + ", section size = " + article.sections.size());
-            for (Section sec : article.sections) {
-              Logr.e("track title = " + sec.track.title + ", title = " + sec.title);
-            }
-
-            setArticle(article);
-          }
-        });
     mCompositeSubscription.add(subs);
   }
 
