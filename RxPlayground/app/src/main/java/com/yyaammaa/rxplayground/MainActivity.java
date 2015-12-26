@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.yyaammaa.rxplayground.util.Logr;
 
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -22,26 +23,20 @@ import rx.schedulers.Schedulers;
 
 public class MainActivity extends ActionBarActivity {
 
-  private MainActivity self = this;
-
+  @Bind(R.id.act_main_test_button_0) Button mButton0;
   @Bind(R.id.act_main_test_button_1) Button mButton1;
+
+  private MainActivity self = this;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.act_main);
-    ButterKnife.bind(this);
+    ButterKnife.bind(self);
     setUpViews();
 
-//    mButton1.setOnClickListener(v -> Logr.e("hello, lambda"));
-    mButton1.setOnClickListener(self::onTest1Click);
-
     test();
-  }
-
-  private void onTest1Click(View v) {
-    startActivity(RetroActivity.createIntent(self));
   }
 
   @OnClick(R.id.act_main_test_button_2)
@@ -446,7 +441,20 @@ public class MainActivity extends ActionBarActivity {
         });
   }
 
+  private void playground(View v) {
+    Observable.from(Arrays.asList(0, 1, 2, 3, 4, 5))
+        .map(i -> "this is " + String.valueOf(i))
+        .subscribe(
+            s -> Logr.e("onNext: " + s),
+            throwable -> Logr.e(throwable.toString()),
+            () -> Logr.e("completed")
+        );
+
+  }
+
   private void setUpViews() {
+    mButton0.setOnClickListener(self::playground);
+    mButton1.setOnClickListener(v -> startActivity(RetroActivity.createIntent(self)));
   }
 
 }
