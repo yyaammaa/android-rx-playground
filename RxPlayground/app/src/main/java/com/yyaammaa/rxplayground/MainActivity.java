@@ -2,11 +2,14 @@ package com.yyaammaa.rxplayground;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+import android.widget.Button;
 
 import com.yyaammaa.rxplayground.util.Logr;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
@@ -19,6 +22,10 @@ import rx.schedulers.Schedulers;
 
 public class MainActivity extends ActionBarActivity {
 
+  private MainActivity self = this;
+
+  @Bind(R.id.act_main_test_button_1) Button mButton1;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -27,13 +34,20 @@ public class MainActivity extends ActionBarActivity {
     ButterKnife.bind(this);
     setUpViews();
 
+//    mButton1.setOnClickListener(v -> Logr.e("hello, lambda"));
+    mButton1.setOnClickListener(self::onTest1Click);
+
     test();
   }
 
-  @OnClick(R.id.act_main_test_button_1)
-  void onTest1Click() {
-    startActivity(RetroActivity.createIntent(this));
+  private void onTest1Click(View v) {
+    startActivity(RetroActivity.createIntent(self));
   }
+
+//  @OnClick(R.id.act_main_test_button_1)
+//  void onTest1Click() {
+//    startActivity(RetroActivity.createIntent(this));
+//  }
 
   @OnClick(R.id.act_main_test_button_2)
   void onTest2Click() {
