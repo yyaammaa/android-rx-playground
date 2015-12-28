@@ -454,6 +454,7 @@ public class MainActivity extends ActionBarActivity {
 //        );
 
     Observable<Track> deferred = Observable.defer(() -> {
+      Logr.e("defer");
       Response<Track> response = null;
       try {
         response = Wasabeat.createApiClient().getTrackResponse(404).toBlocking().single();
@@ -472,7 +473,9 @@ public class MainActivity extends ActionBarActivity {
       }
     });
 
-    deferred.subscribeOn(Schedulers.io())
+    deferred
+        .doOnSubscribe(() -> Logr.e("doOnSubscribe"))
+        .subscribeOn(Schedulers.io())
         .onErrorResumeNext(throwable -> {
           if (throwable instanceof AuthorizationFailedException) {
             Logr.e("onErrorResumeNext: AuthorizationFailedException");
