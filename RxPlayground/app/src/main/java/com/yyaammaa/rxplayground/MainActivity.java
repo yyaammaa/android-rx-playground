@@ -6,13 +6,15 @@ import android.view.View;
 import android.widget.Button;
 
 import com.yyaammaa.rxplayground.util.Logr;
+import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
+import com.yyaammaa.rxplayground.wasabeat.model.Track;
 
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit.Response;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -442,14 +444,41 @@ public class MainActivity extends ActionBarActivity {
   }
 
   private void playground(View v) {
-    Observable.from(Arrays.asList(0, 1, 2, 3, 4, 5))
-        .map(i -> "this is " + String.valueOf(i))
-        .subscribe(
-            s -> Logr.e("onNext: " + s),
-            throwable -> Logr.e(throwable.toString()),
-            () -> Logr.e("completed")
-        );
+//    Observable.from(Arrays.asList(0, 1, 2, 3, 4, 5))
+//        .map(i -> "this is " + String.valueOf(i))
+//        .subscribe(
+//            s -> Logr.e("onNext: " + s),
+//            throwable -> Logr.e(throwable.toString()),
+//            () -> Logr.e("completed")
+//        );
 
+    Wasabeat.createApiClient().getTrackResponse(84166)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<Response<Track>>() {
+          @Override
+          public void onCompleted() {
+            Logr.e("onCompleted");
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            Logr.e("onError");
+            throwable.printStackTrace();
+          }
+
+          @Override
+          public void onNext(Response<Track> trackResponse) {
+            int statusCode = trackResponse.code();
+            boolean isSuccess = trackResponse.isSuccess();
+            Logr.e("onNext: statusCode = " + statusCode + ", isSuccess = " + isSuccess);
+
+            if (isSuccess) {
+              Track track = trackResponse.body();
+              Logr.e("track title = " + track.title);
+            }
+          }
+        });
   }
 
   private void setUpViews() {
