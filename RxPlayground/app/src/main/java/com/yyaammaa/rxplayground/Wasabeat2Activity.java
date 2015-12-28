@@ -166,51 +166,37 @@ public class Wasabeat2Activity extends ActionBarActivity {
    */
   private Observable<Boolean> prepare(Article article) {
     return Observable.just(article)
-        .doOnSubscribe(new Action0() {
-          @Override
-          public void call() {
-            // ここもsubscribeOnで指定したスレッドで実行される
-            Logr.e("prepare: doOnSubscribe: isUiThread = "
-                + ContextUtils.isUiThread(getApplicationContext()));
-            mPlayers = new HashMap<>();
-          }
+        .doOnSubscribe(() -> {
+          // ここもsubscribeOnで指定したスレッドで実行される
+          Logr.e("prepare: doOnSubscribe: isUiThread = "
+              + ContextUtils.isUiThread(getApplicationContext()));
+          mPlayers = new HashMap<>();
         })
-        .flatMap(new Func1<Article, Observable<Track>>() {
-          @Override
-          public Observable<Track> call(Article article) {
-            List<Track> tracks = new ArrayList<>();
-            for (Section sec : article.sections) {
-              tracks.add(sec.track);
-            }
-            return Observable.from(tracks);
+        .flatMap(article1 -> {
+          List<Track> tracks = new ArrayList<>();
+          for (Section sec : article1.sections) {
+            tracks.add(sec.track);
           }
+          return Observable.from(tracks);
         })
-        .filter(new Func1<Track, Boolean>() {
-          @Override
-          public Boolean call(Track track) {
-            if (track.urls == null) {
-              Logr.e("track.urls is null, title = " + track.title);
-              return false;
-            }
-            if (track.urls.sample == null) {
-              Logr.e("track.urls.sample is null, title = " + track.title);
-              return false;
-            }
+        .filter(track -> {
+          if (track.urls == null) {
+            Logr.e("track.urls is null, title = " + track.title);
+            return false;
+          }
+          if (track.urls.sample == null) {
+            Logr.e("track.urls.sample is null, title = " + track.title);
+            return false;
+          }
 
-            mPlayers.put(
-                track,
-                MediaPlayer.create(getApplicationContext(), Uri.parse(track.urls.sample))
-            );
-            return true;
-          }
+          mPlayers.put(
+              track,
+              MediaPlayer.create(getApplicationContext(), Uri.parse(track.urls.sample))
+          );
+          return true;
         })
         .toList()
-        .map(new Func1<List<Track>, Boolean>() {
-          @Override
-          public Boolean call(List<Track> tracks) {
-            return mPlayers.size() == tracks.size();
-          }
-        });
+        .map(tracks -> mPlayers.size() == tracks.size());
   }
 
   private void setArticle(final Article article) {

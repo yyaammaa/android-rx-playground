@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func2;
 
 public final class TextureClient {
 
@@ -24,16 +22,12 @@ public final class TextureClient {
   private static Observable<Article> createArticle(ArticleResponse response) {
     Observable<List<Section>> sectionsObs = createSections(response);
     return Observable.zip(
-        sectionsObs, Observable.just(response),
-        new Func2<List<Section>, ArticleResponse, Article>() {
-          @Override
-          public Article call(List<Section> sections, ArticleResponse response) {
-            Article article = new Article();
-            article.title = response.title;
-            article.description = response.description;
-            article.sections = sections;
-            return article;
-          }
+        sectionsObs, Observable.just(response), (sections, response1) -> {
+          Article article = new Article();
+          article.title = response1.title;
+          article.description = response1.description;
+          article.sections = sections;
+          return article;
         });
   }
 
@@ -42,15 +36,12 @@ public final class TextureClient {
     Observable<Track> trackObs = loadTracks(response);
     Observable<SectionResponse> sectionResponseObs = Observable.from(response.sections);
     return Observable.zip(
-        trackObs, sectionResponseObs, new Func2<Track, SectionResponse, Section>() {
-          @Override
-          public Section call(Track track, SectionResponse sectionResponse) {
-            Section section = new Section();
-            section.text = sectionResponse.text;
-            section.title = sectionResponse.title;
-            section.track = track;
-            return section;
-          }
+        trackObs, sectionResponseObs, (track, sectionResponse) -> {
+          Section section = new Section();
+          section.text = sectionResponse.text;
+          section.title = sectionResponse.title;
+          section.track = track;
+          return section;
         })
         .toList();
   }
@@ -58,22 +49,14 @@ public final class TextureClient {
   private static Observable<Track> loadTracks(ArticleResponse response) {
     Observable<ArticleResponse> aa = Observable.just(response);
     return aa
-        .flatMap(new Func1<ArticleResponse, Observable<Integer>>() {
-          @Override
-          public Observable<Integer> call(ArticleResponse articleResponse) {
-            List<Integer> trackIds = new ArrayList<>();
-            for (SectionResponse sectionResponse : articleResponse.sections) {
-              trackIds.add(sectionResponse.trackId);
-            }
-            return Observable.from(trackIds);
+        .flatMap(articleResponse -> {
+          List<Integer> trackIds = new ArrayList<>();
+          for (SectionResponse sectionResponse : articleResponse.sections) {
+            trackIds.add(sectionResponse.trackId);
           }
+          return Observable.from(trackIds);
         })
-        .flatMap(new Func1<Integer, Observable<Track>>() {
-          @Override
-          public Observable<Track> call(Integer integer) {
-            return getTrack(integer);
-          }
-        });
+        .flatMap(TextureClient::getTrack);
   }
 
   private static Observable<Track> getTrack(int id) {
