@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.yyaammaa.rxplayground.retrofit.AuthorizationFailedException;
 import com.yyaammaa.rxplayground.util.Logr;
 import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
@@ -452,10 +453,35 @@ public class MainActivity extends ActionBarActivity {
 //            () -> Logr.e("completed")
 //        );
 
-    Wasabeat.createApiClient().getTrackResponse(84166)
-        .subscribeOn(Schedulers.io())
+    Observable<Track> deferred = Observable.defer(() -> {
+      Response<Track> response = null;
+      try {
+        response = Wasabeat.createApiClient().getTrackResponse(404).toBlocking().single();
+      } catch (Throwable t) {
+        t.printStackTrace();
+        return Observable.error(t);
+      }
+
+      boolean isSuccess = response.isSuccess();
+      int statusCode = response.code();
+      Logr.e("isSuccess = " + isSuccess + ", statusCode = " + statusCode);
+      if (isSuccess) {
+        return Observable.just(response.body());
+      } else {
+        return Observable.error(new AuthorizationFailedException());
+      }
+    });
+
+    deferred.subscribeOn(Schedulers.io())
+        .onErrorResumeNext(throwable -> {
+          if (throwable instanceof AuthorizationFailedException) {
+            Logr.e("onErrorResumeNext: AuthorizationFailedException");
+          }
+
+          return Observable.error(throwable);
+        })
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Observer<Response<Track>>() {
+        .subscribe(new Observer<Track>() {
           @Override
           public void onCompleted() {
             Logr.e("onCompleted");
@@ -464,21 +490,41 @@ public class MainActivity extends ActionBarActivity {
           @Override
           public void onError(Throwable throwable) {
             Logr.e("onError");
-            throwable.printStackTrace();
           }
 
           @Override
-          public void onNext(Response<Track> trackResponse) {
-            int statusCode = trackResponse.code();
-            boolean isSuccess = trackResponse.isSuccess();
-            Logr.e("onNext: statusCode = " + statusCode + ", isSuccess = " + isSuccess);
-
-            if (isSuccess) {
-              Track track = trackResponse.body();
-              Logr.e("track title = " + track.title);
-            }
+          public void onNext(Track track) {
+            Logr.e("onNext: " + track.title);
           }
         });
+
+//    Wasabeat.createApiClient().getTrackResponse(84166)
+//        .subscribeOn(Schedulers.io())
+//        .observeOn(AndroidSchedulers.mainThread())
+//        .subscribe(new Observer<Response<Track>>() {
+//          @Override
+//          public void onCompleted() {
+//            Logr.e("onCompleted");
+//          }
+//
+//          @Override
+//          public void onError(Throwable throwable) {
+//            Logr.e("onError");
+//            throwable.printStackTrace();
+//          }
+//
+//          @Override
+//          public void onNext(Response<Track> trackResponse) {
+//            int statusCode = trackResponse.code();
+//            boolean isSuccess = trackResponse.isSuccess();
+//            Logr.e("onNext: statusCode = " + statusCode + ", isSuccess = " + isSuccess);
+//
+//            if (isSuccess) {
+//              Track track = trackResponse.body();
+//              Logr.e("track title = " + track.title);
+//            }
+//          }
+//        });
   }
 
   private void setUpViews() {
