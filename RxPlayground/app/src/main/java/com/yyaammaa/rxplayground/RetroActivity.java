@@ -279,7 +279,7 @@ public class RetroActivity extends ActionBarActivity {
   private void get1() {
     GitHubApiClient client = GitHub.createApiClient();
 
-    // TODO: 404エラーとかどこでハンドリング？
+    // 404エラーとかどこでハンドリング？ -> Observable<Response<T>> で受ける
 
     // https://api.github.com/gists/f36f5dba0c2ae784688c
     Observable<Gist> obs = client.getGistById("f36f5dba0c2ae784688c");
