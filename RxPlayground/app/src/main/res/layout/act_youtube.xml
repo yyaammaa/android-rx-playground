@@ -2,18 +2,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".YoutubeActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="youtube" />
 
-    <com.google.android.youtube.player.YouTubePlayerView
-        android:id="@+id/act_youtube_playerview"
+    <com.yyaammaa.rxplayground.view.HdFrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        tools:background="#cccccc" />
+        android:layout_height="300dp">
+
+        <com.google.android.youtube.player.YouTubePlayerView
+            android:id="@+id/act_youtube_playerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:background="#cccccc" />
+
+    </com.yyaammaa.rxplayground.view.HdFrameLayout>
 
 </LinearLayout>

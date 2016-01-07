@@ -46,6 +46,7 @@ public class YoutubeActivity extends YouTubeBaseActivity {
   }
 
   private void setUpViews() {
+
     // 例によってGenymotionではダメ
     mPlayerView.initialize(mApiKey, new YouTubePlayer.OnInitializedListener() {
       @Override
@@ -114,7 +115,6 @@ public class YoutubeActivity extends YouTubeBaseActivity {
         });
 
         player.loadVideo("3HQfmubKDww");
-
 
       }
 
