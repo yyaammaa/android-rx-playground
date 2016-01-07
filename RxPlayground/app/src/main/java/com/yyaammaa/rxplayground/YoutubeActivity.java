@@ -19,6 +19,8 @@ import rx.subscriptions.CompositeSubscription;
 
 // memo: https://developers.google.com/youtube/android/player/reference/com/google/android/youtube/player/YouTubeThumbnailView.OnInitializedListener?hl=ja
 
+// memo: http://www.billboard-japan.com/special/detail/1447
+
 public class YoutubeActivity extends YouTubeBaseActivity {
 
   @BindString(R.string.youtube_api_key) String mApiKey;
