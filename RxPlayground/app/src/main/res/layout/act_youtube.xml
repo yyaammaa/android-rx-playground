@@ -5,11 +5,6 @@
     android:orientation="vertical"
     tools:context=".YoutubeActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="youtube" />
-
     <com.yyaammaa.rxplayground.view.HdFrameLayout
         android:layout_width="match_parent"
         android:layout_height="300dp">
@@ -21,5 +16,44 @@
             tools:background="#cccccc" />
 
     </com.yyaammaa.rxplayground.view.HdFrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/act_youtube_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:lineSpacingExtra="8dp"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                tools:text="aaa" />
+
+            <com.yyaammaa.rxplayground.view.HdFrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginBottom="800dp"
+                android:layout_marginTop="32dp"
+                android:background="#cccccc">
+
+                <com.google.android.youtube.player.YouTubePlayerView
+                    android:id="@+id/act_youtube_playerview2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:background="#cccccc" />
+
+            </com.yyaammaa.rxplayground.view.HdFrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
