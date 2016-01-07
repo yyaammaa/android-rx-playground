@@ -52,6 +52,11 @@ public class MainActivity extends ActionBarActivity {
     startActivity(Wasabeat2Activity.createIntent(this));
   }
 
+  @OnClick(R.id.act_main_test_button_4)
+  void onTest4Click() {
+    startActivity(YoutubeActivity.createIntent(this));
+  }
+
   private void test() {
     //hello("john", "mike");
     // numbers(0, 1, 2, 3, 4, 5);

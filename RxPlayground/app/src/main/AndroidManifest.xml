@@ -24,6 +24,7 @@
         <activity android:name=".RetroActivity" />
         <activity android:name=".WasabeatActivity" />
         <activity android:name=".Wasabeat2Activity" />
+        <activity android:name=".YoutubeActivity" />
     </application>
 
 </manifest>
