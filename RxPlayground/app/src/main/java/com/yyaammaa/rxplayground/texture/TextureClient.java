@@ -1,5 +1,6 @@
 package com.yyaammaa.rxplayground.texture;
 
+import com.yyaammaa.rxplayground.util.Logr;
 import com.yyaammaa.rxplayground.wasabeat.Wasabeat;
 import com.yyaammaa.rxplayground.wasabeat.model.Track;
 
@@ -60,6 +61,7 @@ public final class TextureClient {
   }
 
   private static Observable<Track> getTrack(int id) {
+    Logr.e("getTrack: id = " + id);
     return Wasabeat.createApiClient().getTrack(id);
   }
 
@@ -90,7 +92,8 @@ public final class TextureClient {
     sectionResponses.add(section3);
 
     SectionResponse section4 = new SectionResponse();
-    section4.trackId = 1126348;
+    //section4.trackId = 1126348; // 404になった
+    section4.trackId = 1104201;
     section4.title = "04. Wonderwall - Oasis";
     section4.text = "USのハードロックに傾倒していたわけだが、転機が起こる。同じサッカー部で後ほど同じバンドを組むことになる友達がオアシスの「Morning Glory」をさらっと貸してくれる。 これこそ正に衝撃的だった。同じギターを主軸としたサウンドなのに、なぜ彼らは派手な速弾きをせずとも、圧力のある音を生み出せるのか？ それでいて「歌」が最強だ。なんでこんなことが出来るんだ？とノエル・ギャラガーのことを調べまくった。コピーもしたし、海賊版の未発表曲も漁った。とにかく彼はすごかった。";
     sectionResponses.add(section4);

@@ -1,11 +1,11 @@
 package com.yyaammaa.rxplayground;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.yyaammaa.rxplayground.RxBus.GreetingEvent;
 import com.yyaammaa.rxplayground.RxBus.RxBusProvider;
 
@@ -14,7 +14,7 @@ import butterknife.OnClick;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class RxBusActivity extends YouTubeBaseActivity {
+public class RxBusActivity extends Activity {
 
   private RxBusActivity self = this;
 

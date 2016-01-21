@@ -41,11 +41,11 @@ public class RetroActivity extends ActionBarActivity {
 
   @OnClick(R.id.act_retro_test_button_1)
   void onTest1Click() {
-    //get1();
+    get1();
     //get2();
     //get3();
     //get4();
-    forQiitaPost();
+    //forQiitaPost();
   }
 
   private void test() {

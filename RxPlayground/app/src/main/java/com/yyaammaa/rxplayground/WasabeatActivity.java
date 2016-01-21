@@ -234,7 +234,7 @@ public class WasabeatActivity extends ActionBarActivity {
               }
               setArticle(article);
             },
-            throwable -> Logr.e("onError"),
+            throwable -> Logr.e("onError: " + throwable),
             () -> Logr.e("onCompleted")
         );
 
