@@ -11,6 +11,7 @@ import com.yyaammaa.rxplayground.RxBus.RxBusProvider;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class RxBusActivity extends YouTubeBaseActivity {
@@ -41,6 +42,7 @@ public class RxBusActivity extends YouTubeBaseActivity {
     mCompositeSubscription.add(
         RxBusProvider.getInstance()
             .toObservable()
+            .subscribeOn(AndroidSchedulers.mainThread())
             .subscribe(o -> {
               if (o instanceof GreetingEvent) {
                 GreetingEvent event = (GreetingEvent) o;
