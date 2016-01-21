@@ -39,4 +39,10 @@
         android:layout_height="48dp"
         android:text="wasabeat-youtube" />
 
+    <Button
+        android:id="@+id/act_main_test_button_5"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
+        android:text="RxBus" />
+
 </LinearLayout>

@@ -57,6 +57,11 @@ public class MainActivity extends ActionBarActivity {
     startActivity(YoutubeActivity.createIntent(this));
   }
 
+  @OnClick(R.id.act_main_test_button_5)
+  void onTest5Click() {
+    startActivity(RxBusActivity.createIntent(this));
+  }
+
   private void test() {
     //hello("john", "mike");
     // numbers(0, 1, 2, 3, 4, 5);
