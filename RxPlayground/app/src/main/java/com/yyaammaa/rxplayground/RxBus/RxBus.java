@@ -23,7 +23,7 @@ public class RxBus {
     mBus.onNext(o);
   }
 
-  public Observable<Object> toObserverable() {
+  public Observable<Object> toObservable() {
     return mBus;
   }
 

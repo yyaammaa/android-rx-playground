@@ -40,17 +40,17 @@ public class RxBusActivity extends YouTubeBaseActivity {
     mCompositeSubscription = new CompositeSubscription();
     mCompositeSubscription.add(
         RxBusProvider.getInstance()
-            .toObserverable()
+            .toObservable()
             .subscribe(o -> {
               if (o instanceof GreetingEvent) {
                 GreetingEvent event = (GreetingEvent) o;
                 Toast.makeText(
-                    this,
+                    self,
                     "Greeting from " + event.greetingFrom().name(),
                     Toast.LENGTH_SHORT
                 ).show();
               } else {
-                Toast.makeText(this, "Error?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(self, "Error?", Toast.LENGTH_SHORT).show();
               }
             })
     );
